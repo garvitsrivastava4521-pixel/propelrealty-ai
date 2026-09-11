@@ -1,5 +1,6 @@
-
-{
+node -e '
+const fs = require("fs");
+const content = {
   "name": "propel-realty-ai",
   "version": "0.1.0",
   "private": true,
@@ -28,5 +29,8 @@
     "tailwindcss": "^4.0.0",
     "typescript": "^5"
   }
-}
+};
+fs.writeFileSync("package.json", JSON.stringify(content, null, 2));
+'
+
 
