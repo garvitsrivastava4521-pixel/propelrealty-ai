@@ -1,4 +1,4 @@
-cat << 'EOF' > package.json
+
 {
   "name": "propel-realty-ai",
   "version": "0.1.0",
