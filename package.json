@@ -1,0 +1,29 @@
+{
+  "name": "propelrealty-ai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@google/genai": "^2.22.0",
+    "@paddle/paddle-node-sdk": "^3.10.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "autoprefixer": "^10.4.20",
+    "next": "14.2.5",
+    "postcss": "^8.4.47",
+    "react": "^18",
+    "react-dom": "^18",
+    "tailwindcss": "^3.4.14"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+}
+
