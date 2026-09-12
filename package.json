@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@google/genai": "^0.1.2",
+    "@google/genai": "^2.21.0",
     "@lemonsqueezy/lemonsqueezy.js": "^0.1.0",
     "@supabase/supabase-js": "^2.48.0",
     "clsx": "^2.1.1",
@@ -28,5 +28,6 @@
     "typescript": "^5"
   }
 }
+
 
 
