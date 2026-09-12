@@ -9,30 +9,34 @@ export default function LandingPage() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sessionId] = useState(() => 'session_' + Math.random().toString(36).substring(2, 9));
 
   const sendMessage = async () => {
     if (!input.trim()) return;
+
     const userMsg = { role: 'user', text: input };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setLoading(true);
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, userMsg].map((m) => ({
-            role: m.role,
-            parts: [{ text: m.text }]
-          }))
-        })
+          prompt: input,
+          sessionId: sessionId,
+        }),
       });
+
       const data = await res.json();
-      if (data.reply) {
-        setMessages((prev) => [...prev, { role: 'assistant', text: data.reply }]);
+
+      if (data.text) {
+        setMessages((prev) => [...prev, { role: 'assistant', text: data.text }]);
+      } else if (data.error) {
+        setMessages((prev) => [...prev, { role: 'assistant', text: `Error: ${data.error}` }]);
       }
-    } catch {
+    } catch (error) {
       setMessages((prev) => [...prev, { role: 'assistant', text: 'Error connecting to engine.' }]);
     } finally {
       setLoading(false);
@@ -62,13 +66,13 @@ export default function LandingPage() {
             Capture Every Real Estate Lead 24/7 with Autonomous AI.
           </h1>
           <p className="text-lg text-slate-400 mb-8">
-            Intercept incoming web traffic in sub-15 seconds, pre-screen budgets, and auto-book Zoom property tours directly onto agent calendars.
+            Intercept incoming web traffic in sub-15 seconds, pre-screen budgets, and auto-book Zoom property tours directly into your calendar.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="/onboarding" className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-center font-bold text-lg transition">
+            <Link href="/onboarding" className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-center font-bold transition">
               Start 7-Day Free Trial
             </Link>
-            <a href="#pricing" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center font-bold text-lg transition">
+            <a href="#pricing" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center font-semibold transition">
               View Pricing
             </a>
           </div>
@@ -100,7 +104,7 @@ export default function LandingPage() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
               placeholder="Test the buyer bot..."
-              className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500"
+              className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 text-white"
             />
             <button onClick={sendMessage} className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-sm font-semibold transition">
               Send
@@ -112,27 +116,27 @@ export default function LandingPage() {
       {/* Pricing Grid */}
       <section id="pricing" className="max-w-7xl w-full mx-auto my-16">
         <h2 className="text-3xl font-bold text-center mb-4">Transparent Pricing for Agencies of All Sizes</h2>
-        <p className="text-center text-slate-400 mb-12">All tiers include a 7-day free trial. Mandatory $900 onboarding fee applies upon activation.</p>
+        <p className="text-center text-slate-400 mb-12">All tiers include a 7-day free trial. Mandatory $900 onboarding fee applied after trial.</p>
 
         <div className="grid md:grid-cols-4 gap-6">
           {[
-            { title: 'Starter', price: '$299', audience: 'Individual Agents', features: ['Basic AI lead response', 'Listing copy generator', 'Standard email support'] },
-            { title: 'Custom', price: '$800', audience: 'Boutique Agencies', features: ['Tailored options', 'Automated tour scheduling', 'CRM integrations'] },
-            { title: 'Advanced', price: '$1,500', audience: 'Mid-Sized Brokerages', features: ['24/7 AI multi-channel follow-up', 'Market report generator', 'Priority support'] },
-            { title: 'Enterprise', price: '$4,500', audience: 'Large Agencies', features: ['Dedicated API infrastructure', 'Custom CRM webhooks', 'SLA guarantees'] }
+            { title: 'Starter', price: '$299', audience: 'Individual Agents', features: ['Basic AI lead response', 'Listing integration', 'Standard support'] },
+            { title: 'Custom', price: '$800', audience: 'Boutique Agencies', features: ['Tailored options', 'Automated tour booking', 'CRM sync'] },
+            { title: 'Advanced', price: '$1,500', audience: 'Mid-Sized Brokerages', features: ['24/7 AI multi-channel follow-ups', 'Advanced analytics', 'Priority routing'] },
+            { title: 'Enterprise', price: '$4,500', audience: 'Large Agencies', features: ['Dedicated API infrastructure', 'Custom integrations', 'Account manager'] },
           ].map((tier, i) => (
             <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col justify-between hover:border-blue-500/50 transition">
               <div>
                 <h3 className="text-xl font-bold mb-1">{tier.title}</h3>
                 <p className="text-xs text-slate-400 mb-4">{tier.audience}</p>
-                <div className="text-3xl font-extrabold mb-6">{tier.price} <span className="text-sm font-normal text-slate-400">/ mo</span></div>
-                <ul className="space-y-2 mb-6 text-sm text-slate-300">
+                <div className="text-3xl font-extrabold mb-6">{tier.price} <span className="text-sm font-normal text-slate-500">/mo</span></div>
+                <ul className="space-y-2 text-sm text-slate-300">
                   {tier.features.map((f, idx) => (
                     <li key={idx} className="flex items-center gap-2">✓ {f}</li>
                   ))}
                 </ul>
               </div>
-              <Link href="/onboarding" className="w-full block text-center bg-slate-800 hover:bg-blue-600 border border-slate-700 hover:border-transparent py-2 rounded-lg font-semibold text-sm transition">
+              <Link href="/onboarding" className="w-full block text-center bg-slate-800 hover:bg-blue-600 border border-slate-700 hover:border-blue-500 mt-6 py-2 rounded-lg text-sm font-semibold transition">
                 Start Free Trial
               </Link>
             </div>
@@ -142,3 +146,4 @@ export default function LandingPage() {
     </main>
   );
 }
+
