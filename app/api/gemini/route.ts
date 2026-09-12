@@ -2,17 +2,22 @@ import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!apiKey) {
     return NextResponse.json({ error: 'GEMINI_API_KEY is not configured' }, { status: 500 });
   }
+
+  if (!supabaseUrl || !supabaseKey) {
+    return NextResponse.json({ error: 'Supabase credentials are missing' }, { status: 500 });
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
   try {
     const { prompt, sessionId } = await req.json();
@@ -53,10 +58,14 @@ export async function POST(req: Request) {
     ]);
 
     return NextResponse.json({ text: replyText });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: 'Failed to process request', details: error?.message },
+      { status: 500 }
+    );
   }
 }
+
 
 
 
