@@ -28,25 +28,25 @@ export async function POST(req: Request) {
       .eq('session_id', sessionId)
       .order('created_at', { ascending: true });
 
-    // 2. Format history for Gemini SDK
-    const contents = (previousMessages || []).map((msg) => ({
-      role: msg.role,
+    // 2. Format history for Google GenAI SDK
+    const contents: any[] = (previousMessages || []).map((msg: any) => ({
+      role: msg.role === 'model' ? 'model' : 'user',
       parts: [{ text: msg.content }],
     }));
 
-    // Append the current user prompt
+    // Append current user prompt
     contents.push({ role: 'user', parts: [{ text: prompt }] });
 
     // 3. Generate response from Gemini
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents,
+      contents: contents,
     });
 
     const replyText = response.text || '';
 
-    // 4. Save both the user prompt and model response to Supabase
+    // 4. Save both prompt and model response to Supabase
     await supabase.from('messages').insert([
       { session_id: sessionId, role: 'user', content: prompt },
       { session_id: sessionId, role: 'model', content: replyText },
@@ -57,5 +57,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
   }
 }
+
 
 
