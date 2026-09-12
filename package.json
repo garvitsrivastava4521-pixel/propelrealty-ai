@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@google/genai": "^2.21.0",
-    "@lemonsqueezy/lemonsqueezy.js": "^0.1.7",
+    "@google/genai": "^0.1.2",
+    "@lemonsqueezy/lemonsqueezy.js": "^0.1.0",
     "@supabase/supabase-js": "^2.48.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.475.0",
@@ -28,4 +28,5 @@
     "typescript": "^5"
   }
 }
+
 
