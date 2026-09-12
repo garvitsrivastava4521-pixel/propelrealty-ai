@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
-  
+
   if (!apiKey) {
     return NextResponse.json({ error: 'GEMINI_API_KEY is not configured' }, { status: 500 });
   }
@@ -22,5 +22,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
   }
 }
+
 
 
