@@ -1,11 +1,16 @@
 import { GoogleGenAI } from '@google/genai';
 import { NextResponse } from 'next/server';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+export async function POST(req: Request) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  
+  if (!apiKey) {
+    return NextResponse.json({ error: 'GEMINI_API_KEY is not configured' }, { status: 500 });
+  }
 
-export async function POST(request: Request) {
   try {
-    const { prompt } = await request.json();
+    const ai = new GoogleGenAI({ apiKey });
+    const { prompt } = await req.json();
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
@@ -14,7 +19,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ text: response.text });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to generate content' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
   }
 }
+
 
