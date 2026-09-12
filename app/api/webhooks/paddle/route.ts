@@ -1,45 +1,43 @@
-import { NextRequest, NextResponse } from "next/server";
-import { Paddle, Environment } from "@paddle/paddle-node-sdk";
+import { Paddle, EventName } from '@paddle/paddle-node-sdk';
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
 
-const paddle = new Paddle(process.env.PADDLE_API_KEY || "", {
-  environment:
-    process.env.PADDLE_ENVIRONMENT === "production"
-      ? Environment.production
-      : Environment.sandbox,
-});
+const paddle = new Paddle(process.env.PADDLE_API_KEY!);
 
-export async function POST(req: NextRequest) {
-  const signature = req.headers.get("paddle-signature");
-  const rawBody = await req.text();
-
-  if (!signature) {
-    return NextResponse.json({ error: "Missing signature header" }, { status: 400 });
-  }
-
+export async function POST(req: Request) {
   try {
-    // Unmask and parse the event using the SDK webhook helper
-    const event = paddle.webhooks.unmarshal(
+    const rawBody = await req.text();
+    const headersList = await headers();
+    const signature = headersList.get('paddle-signature');
+
+    if (!signature) {
+      return NextResponse.json({ error: 'Missing signature' }, { status: 400 });
+    }
+
+    // Await the asynchronous unmarshal call
+    const event = await paddle.webhooks.unmarshal(
       rawBody,
-      process.env.PADDLE_WEBHOOK_SECRET_KEY || "",
+      process.env.PADDLE_WEBHOOK_SECRET_KEY!,
       signature
     );
 
     switch (event.eventType) {
-      case "transaction.completed":
+      case EventName.TransactionCompleted: {
         const transactionData = event.data;
         const userId = transactionData.customData?.userId;
-        
-        console.log(`Payment received for user: ${userId}`);
-        // TODO: Update database status in Supabase
+        // Handle successful transaction logic here
         break;
-
+      }
       default:
-        console.log(`Unhandled Paddle event: ${event.eventType}`);
+        console.log(`Unhandled event type: ${event.eventType}`);
     }
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    console.error("Webhook signature verification failed:", err.message);
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  } catch (error: any) {
+    console.error('Webhook processing error:', error);
+    return NextResponse.json(
+      { error: 'Webhook handler failed', details: error.message },
+      { status: 500 }
+    );
   }
 }
