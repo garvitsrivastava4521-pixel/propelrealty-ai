@@ -45,27 +45,30 @@ export default function LandingPage() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-white flex flex-col justify-between p-6 pb-24 md:p-12 md:pb-24">
-      {/* Centered Top Header with Custom Graphic Logo */}
+      {/* Centered Top Header with Selected SVG Logo */}
       <header className="max-w-7xl w-full mx-auto flex justify-center items-center py-4">
-        <Link href="/" className="flex items-center gap-3">
-          {/* Logo Mark Icon */}
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-600 to-sky-400 p-[1px] shadow-lg shadow-blue-500/20">
-            <div className="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
-              <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h4m0 0v4m0-4l-5 5" className="text-sky-300" />
-              </svg>
-            </div>
-          </div>
-          {/* Logo Typography */}
-          <div className="flex flex-col">
-            <span className="text-2xl font-black tracking-tight text-white leading-none">
-              Propel<span className="text-blue-500">Realty</span>
-            </span>
-            <span className="text-[10px] font-extrabold tracking-[0.25em] text-slate-400 uppercase mt-1">
-              AUTONOMOUS AI
-            </span>
-          </div>
+        <Link href="/" className="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 120" className="h-14 w-auto">
+            <defs>
+              <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3B82F6" />
+                <stop offset="100%" stopColor="#1E40AF" />
+              </linearGradient>
+            </defs>
+
+            {/* Logo Mark */}
+            <rect x="15" y="15" width="90" height="90" rx="22" fill="url(#badgeGrad)"/>
+            <path d="M 42 78 L 42 38 L 68 38 C 78 38, 82 44, 82 53 C 82 62, 78 68, 68 68 L 56 68 L 56 78 Z" fill="none" stroke="#FFFFFF" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M 56 53 L 70 38" stroke="#60A5FA" strokeWidth="6" strokeLinecap="round"/>
+
+            {/* Typography */}
+            <text x="130" y="65" fontFamily="Inter, system-ui, sans-serif" fontSize="38" fontWeight="800" fill="#FFFFFF">
+              Propel<tspan fill="#60A5FA">AI</tspan>
+            </text>
+            <text x="132" y="88" fontFamily="Inter, system-ui, sans-serif" fontSize="13" fontWeight="600" fill="#64748B" letterSpacing="3">
+              REAL ESTATE ENGINE
+            </text>
+          </svg>
         </Link>
       </header>
 
@@ -129,7 +132,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Persistent Bottom 4-Option Navigation Bar */}
+      {/* Persistent Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md border-t border-slate-800 z-50 py-3 px-4">
         <div className="max-w-md mx-auto grid grid-cols-4 gap-2 text-center">
           <Link href="/" className="flex flex-col items-center justify-center text-xs font-semibold text-blue-400 hover:text-blue-300">
@@ -156,6 +159,7 @@ export default function LandingPage() {
     </main>
   );
 }
+
 
 
 
