@@ -5,7 +5,7 @@ import Link from 'next/link';
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-slate-950 text-white flex flex-col justify-between p-6 pb-24 md:p-12 md:pb-24">
-      {/* Centered Top Header */}
+      {/* Centered Top Header with PropelAI SVG Logo */}
       <header className="max-w-7xl w-full mx-auto flex justify-center items-center py-4">
         <Link href="/" className="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 120" className="h-14 w-auto">
@@ -62,7 +62,8 @@ export default function LandingPage() {
             <span>Home</span>
           </Link>
 
-          <Link href="#features" className="flex flex-col items-center justify-center text-xs font-semibold text-slate-400 hover:text-white">
+          {/* Linked directly to /features */}
+          <Link href="/features" className="flex flex-col items-center justify-center text-xs font-semibold text-slate-400 hover:text-white">
             <span className="text-lg">⚡</span>
             <span>Features</span>
           </Link>
@@ -81,6 +82,7 @@ export default function LandingPage() {
     </main>
   );
 }
+
 
 
 
