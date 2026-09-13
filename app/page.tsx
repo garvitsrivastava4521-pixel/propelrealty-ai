@@ -45,38 +45,19 @@ export default function LandingPage() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-white flex flex-col justify-between p-6 pb-24 md:p-12 md:pb-24">
-      {/* Top Header */}
-      <header className="max-w-7xl w-full mx-auto flex justify-between items-center py-4">
+      {/* Centered Top Header with Logo Only */}
+      <header className="max-w-7xl w-full mx-auto flex justify-center items-center py-4">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-lg text-white">
             P
           </div>
           <span className="text-xl font-extrabold tracking-tight text-white">PropelRealty AI</span>
         </div>
-        <div className="flex gap-4">
-          <Link href="/pricing" className="px-4 py-2 text-sm text-slate-300 hover:text-white transition">
-            Pricing
-          </Link>
-          <Link href="/onboarding" className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold transition">
-            Start 7-Day Free Trial
-          </Link>
-        </div>
       </header>
 
-      {/* Main Hero & Logo Section */}
+      {/* Main Hero Section */}
       <section className="max-w-7xl w-full mx-auto grid md:grid-cols-2 gap-12 items-center my-8">
         <div>
-          {/* Logo / Brand Header Box */}
-          <div className="inline-flex items-center gap-3 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 mb-6 shadow-md">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-blue-500/30">
-              PR
-            </div>
-            <div>
-              <div className="text-sm font-bold text-white">PropelRealty Logo</div>
-              <div className="text-xs text-slate-400">Autonomous Real Estate AI</div>
-            </div>
-          </div>
-
           <div>
             <span className="text-xs font-semibold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full">
               Autonomous Sales Funnel
@@ -90,8 +71,8 @@ export default function LandingPage() {
             Intercept incoming web traffic in sub-15 seconds, pre-screen budgets, and auto-book Zoom property tours directly into your calendar.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="/onboarding" className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-center font-bold transition">
-              Start 7-Day Free Trial
+            <Link href="/terms" className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-center font-bold transition">
+              Terms and Conditions
             </Link>
             <Link href="/pricing" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center font-semibold transition">
               View Pricing
@@ -161,5 +142,6 @@ export default function LandingPage() {
     </main>
   );
 }
+
 
 
