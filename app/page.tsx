@@ -45,14 +45,28 @@ export default function LandingPage() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-white flex flex-col justify-between p-6 pb-24 md:p-12 md:pb-24">
-      {/* Centered Top Header with Logo Only */}
+      {/* Centered Top Header with Custom Graphic Logo */}
       <header className="max-w-7xl w-full mx-auto flex justify-center items-center py-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-lg text-white">
-            P
+        <Link href="/" className="flex items-center gap-3">
+          {/* Logo Mark Icon */}
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-600 to-sky-400 p-[1px] shadow-lg shadow-blue-500/20">
+            <div className="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
+              <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h4m0 0v4m0-4l-5 5" className="text-sky-300" />
+              </svg>
+            </div>
           </div>
-          <span className="text-xl font-extrabold tracking-tight text-white">PropelRealty AI</span>
-        </div>
+          {/* Logo Typography */}
+          <div className="flex flex-col">
+            <span className="text-2xl font-black tracking-tight text-white leading-none">
+              Propel<span className="text-blue-500">Realty</span>
+            </span>
+            <span className="text-[10px] font-extrabold tracking-[0.25em] text-slate-400 uppercase mt-1">
+              AUTONOMOUS AI
+            </span>
+          </div>
+        </Link>
       </header>
 
       {/* Main Hero Section */}
@@ -71,7 +85,7 @@ export default function LandingPage() {
             Intercept incoming web traffic in sub-15 seconds, pre-screen budgets, and auto-book Zoom property tours directly into your calendar.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="/terms" className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-center font-bold transition">
+            <Link href="/terms" className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-center font-bold transition shadow-lg shadow-blue-600/30">
               Terms and Conditions
             </Link>
             <Link href="/pricing" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center font-semibold transition">
@@ -142,6 +156,7 @@ export default function LandingPage() {
     </main>
   );
 }
+
 
 
 
