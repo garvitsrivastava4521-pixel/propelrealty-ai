@@ -44,24 +44,45 @@ export default function LandingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white flex flex-col justify-between p-6 md:p-12">
-      {/* Header */}
+    <main className="min-h-screen bg-slate-950 text-white flex flex-col justify-between p-6 pb-24 md:p-12 md:pb-24">
+      {/* Top Header */}
       <header className="max-w-7xl w-full mx-auto flex justify-between items-center py-4">
-        <div className="text-2xl font-extrabold tracking-tight text-blue-500">PropelRealty AI</div>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-lg text-white">
+            P
+          </div>
+          <span className="text-xl font-extrabold tracking-tight text-white">PropelRealty AI</span>
+        </div>
         <div className="flex gap-4">
-          <a href="#pricing" className="px-4 py-2 text-sm text-slate-300 hover:text-white transition">Pricing</a>
+          <Link href="/pricing" className="px-4 py-2 text-sm text-slate-300 hover:text-white transition">
+            Pricing
+          </Link>
           <Link href="/onboarding" className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold transition">
             Start 7-Day Free Trial
           </Link>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="max-w-7xl w-full mx-auto grid md:grid-cols-2 gap-12 items-center my-12">
+      {/* Main Hero & Logo Section */}
+      <section className="max-w-7xl w-full mx-auto grid md:grid-cols-2 gap-12 items-center my-8">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full">
-            Autonomous Sales Funnel
-          </span>
+          {/* Logo / Brand Header Box */}
+          <div className="inline-flex items-center gap-3 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 mb-6 shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-blue-500/30">
+              PR
+            </div>
+            <div>
+              <div className="text-sm font-bold text-white">PropelRealty Logo</div>
+              <div className="text-xs text-slate-400">Autonomous Real Estate AI</div>
+            </div>
+          </div>
+
+          <div>
+            <span className="text-xs font-semibold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full">
+              Autonomous Sales Funnel
+            </span>
+          </div>
+
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mt-4 mb-6 leading-tight">
             Capture Every Real Estate Lead 24/7 with Autonomous AI.
           </h1>
@@ -72,9 +93,9 @@ export default function LandingPage() {
             <Link href="/onboarding" className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-center font-bold transition">
               Start 7-Day Free Trial
             </Link>
-            <a href="#pricing" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center font-semibold transition">
+            <Link href="/pricing" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center font-semibold transition">
               View Pricing
-            </a>
+            </Link>
           </div>
           <p className="text-xs text-slate-500 mt-3">*All plans include a mandatory $900 setup fee after trial.</p>
         </div>
@@ -113,37 +134,32 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Grid */}
-      <section id="pricing" className="max-w-7xl w-full mx-auto my-16">
-        <h2 className="text-3xl font-bold text-center mb-4">Transparent Pricing for Agencies of All Sizes</h2>
-        <p className="text-center text-slate-400 mb-12">All tiers include a 7-day free trial. Mandatory $900 onboarding fee applied after trial.</p>
+      {/* Persistent Bottom 4-Option Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md border-t border-slate-800 z-50 py-3 px-4">
+        <div className="max-w-md mx-auto grid grid-cols-4 gap-2 text-center">
+          <Link href="/" className="flex flex-col items-center justify-center text-xs font-semibold text-blue-400 hover:text-blue-300">
+            <span className="text-lg">🏠</span>
+            <span>Home</span>
+          </Link>
 
-        <div className="grid md:grid-cols-4 gap-6">
-          {[
-            { title: 'Starter', price: '$299', audience: 'Individual Agents', features: ['Basic AI lead response', 'Listing integration', 'Standard support'] },
-            { title: 'Custom', price: '$800', audience: 'Boutique Agencies', features: ['Tailored options', 'Automated tour booking', 'CRM sync'] },
-            { title: 'Advanced', price: '$1,500', audience: 'Mid-Sized Brokerages', features: ['24/7 AI multi-channel follow-ups', 'Advanced analytics', 'Priority routing'] },
-            { title: 'Enterprise', price: '$4,500', audience: 'Large Agencies', features: ['Dedicated API infrastructure', 'Custom integrations', 'Account manager'] },
-          ].map((tier, i) => (
-            <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col justify-between hover:border-blue-500/50 transition">
-              <div>
-                <h3 className="text-xl font-bold mb-1">{tier.title}</h3>
-                <p className="text-xs text-slate-400 mb-4">{tier.audience}</p>
-                <div className="text-3xl font-extrabold mb-6">{tier.price} <span className="text-sm font-normal text-slate-500">/mo</span></div>
-                <ul className="space-y-2 text-sm text-slate-300">
-                  {tier.features.map((f, idx) => (
-                    <li key={idx} className="flex items-center gap-2">✓ {f}</li>
-                  ))}
-                </ul>
-              </div>
-              <Link href="/onboarding" className="w-full block text-center bg-slate-800 hover:bg-blue-600 border border-slate-700 hover:border-blue-500 mt-6 py-2 rounded-lg text-sm font-semibold transition">
-                Start Free Trial
-              </Link>
-            </div>
-          ))}
+          <Link href="#features" className="flex flex-col items-center justify-center text-xs font-semibold text-slate-400 hover:text-white">
+            <span className="text-lg">⚡</span>
+            <span>Features</span>
+          </Link>
+
+          <Link href="/pricing" className="flex flex-col items-center justify-center text-xs font-semibold text-slate-400 hover:text-white">
+            <span className="text-lg">💳</span>
+            <span>Plans</span>
+          </Link>
+
+          <Link href="/onboarding" className="flex flex-col items-center justify-center text-xs font-semibold text-green-400 hover:text-green-300">
+            <span className="text-lg">🚀</span>
+            <span>Demo (7-Day Free)</span>
+          </Link>
         </div>
-      </section>
+      </nav>
     </main>
   );
 }
+
 
