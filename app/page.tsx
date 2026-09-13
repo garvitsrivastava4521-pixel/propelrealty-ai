@@ -62,7 +62,6 @@ export default function LandingPage() {
             <span>Home</span>
           </Link>
 
-          {/* Linked directly to /features */}
           <Link href="/features" className="flex flex-col items-center justify-center text-xs font-semibold text-slate-400 hover:text-white">
             <span className="text-lg">⚡</span>
             <span>Features</span>
@@ -73,15 +72,16 @@ export default function LandingPage() {
             <span>Plans</span>
           </Link>
 
-          <Link href="/demo" className="flex flex-col items-center justify-center text-xs font-semibold text-green-400 hover:text-green-300">
+          <Link href="/onboarding" className="flex flex-col items-center justify-center text-xs font-semibold text-green-400 hover:text-green-300">
             <span className="text-lg">🚀</span>
-            <span>Demo (7-Day Free)</span>
+            <span>Get Started</span>
           </Link>
         </div>
       </nav>
     </main>
   );
 }
+
 
 
 
