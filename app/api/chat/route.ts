@@ -67,7 +67,8 @@ ${JSON.stringify(inventoryData)}
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `CLIENT INQUIRY:\n${leadMessage}`,
+            contents: `CLIENT INQUIRY:\n${leadMessage}`,
+
       config: {
         systemInstruction: systemInstruction,
       },
