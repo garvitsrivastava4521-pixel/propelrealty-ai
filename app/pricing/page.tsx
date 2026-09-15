@@ -1,109 +1,106 @@
-'use client';
-
-import { useState } from 'react';
-import Link from 'next/link';
-
-const TIERS = [
-  { id: 'starter', name: 'Starter', price: 299, variantId: 'VAR_STARTER_ID', audience: 'Individual Agents', features: ['Basic AI lead response', 'Listing copy generator', 'Standard email support'] },
-  { id: 'custom', name: 'Custom', price: 800, variantId: 'VAR_CUSTOM_ID', audience: 'Boutique Agencies', features: ['Tailored options', 'Automated tour scheduling', 'CRM integrations'] },
-  { id: 'advanced', name: 'Advanced', price: 1500, variantId: 'VAR_ADVANCED_ID', audience: 'Mid-Sized Brokerages', features: ['24/7 AI multi-channel follow-up', 'Market report generator', 'Priority support'] },
-  { id: 'enterprise', name: 'Enterprise', price: 4500, variantId: 'VAR_ENTERPRISE_ID', audience: 'Large Agencies', features: ['Dedicated API infrastructure', 'Custom CRM webhooks', 'SLA guarantees'] },
-];
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function PricingPage() {
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'usdt'>('card');
-  const [loadingTier, setLoadingTier] = useState<string | null>(null);
-
-  const handleCheckout = async (tier: typeof TIERS[0]) => {
-    setLoadingTier(tier.id);
-    try {
-      if (paymentMethod === 'card') {
-        const res = await fetch('/api/checkout/lemonsqueezy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ variantId: tier.variantId, tierName: tier.name })
-        });
-        const data = await res.json();
-        if (data.url) window.location.href = data.url;
-      } else {
-        const res = await fetch('/api/checkout/nowpayments', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: tier.price + 900, tierName: tier.name }) // Price + $900 setup fee
-        });
-        const data = await res.json();
-        if (data.invoice_url) window.location.href = data.invoice_url;
-      }
-    } catch (err) {
-      alert('Checkout initialization failed. Check console.');
-    } finally {
-      setLoadingTier(null);
-    }
-  };
+  const [paymentMethod, setPaymentMethod] = useState<"paddle" | "nowpayments">("nowpayments");
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white p-6 md:p-12">
-      <header className="max-w-7xl mx-auto flex justify-between items-center pb-12">
-        <Link href="/" className="text-2xl font-extrabold text-blue-500">PropelRealty AI</Link>
-        <Link href="/onboarding" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-sm font-semibold rounded-lg">
-          Start 7-Day Free Trial
+    <div className="min-h-screen bg-[#090D16] text-white">
+      {/* NAVBAR */}
+      <nav className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
+        <Link href="/" className="flex items-center">
+          {/* SVG Logo */}
+          <Image
+            src="/logo.svg"
+            alt="PropelRealty AI Logo"
+            width={180}
+            height={40}
+            priority
+            className="h-10 w-auto object-contain"
+          />
         </Link>
-      </header>
 
-      <section className="max-w-5xl mx-auto text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Flexible Billing for Every Agency</h1>
-        <p className="text-slate-400 text-lg mb-8">All plans include a 7-day free trial. A one-time $900 mandatory setup fee applies upon activation.</p>
+        {/* Navbar CTA Button */}
+        <Link
+          href="/demo"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
+        >
+          Book Live Demo
+        </Link>
+      </nav>
 
-        {/* Payment Method Switcher */}
-        <div className="inline-flex bg-slate-900 border border-slate-800 p-1 rounded-xl">
+      {/* PRICING SECTION */}
+      <section className="max-w-4xl mx-auto px-4 py-12 text-center">
+        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+          Flexible Billing for Every Agency
+        </h1>
+
+        <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto mb-8">
+          A one-time $900 mandatory setup fee applies upon activation.
+        </p>
+
+        {/* PAYMENT METHOD TOGGLE */}
+        <div className="flex justify-center items-center gap-2 max-w-md mx-auto mb-10 bg-[#111827] p-1.5 rounded-xl border border-gray-800">
           <button
-            onClick={() => setPaymentMethod('card')}
-            className={`px-6 py-2 rounded-lg font-semibold text-sm transition ${paymentMethod === 'card' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}
+            onClick={() => setPaymentMethod("paddle")}
+            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${
+              paymentMethod === "paddle"
+                ? "bg-blue-600 text-white shadow-sm font-semibold"
+                : "text-gray-400 hover:text-white"
+            }`}
           >
-            Credit Card / Card (LemonSqueezy)
+            Credit Card (Paddle)
           </button>
           <button
-            onClick={() => setPaymentMethod('usdt')}
-            className={`px-6 py-2 rounded-lg font-semibold text-sm transition ${paymentMethod === 'usdt' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'}`}
+            onClick={() => setPaymentMethod("nowpayments")}
+            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${
+              paymentMethod === "nowpayments"
+                ? "bg-[#10B981] text-white shadow-sm font-semibold"
+                : "text-gray-400 hover:text-white"
+            }`}
           >
-            USDT (BEP20 / BSC Network)
+            Crypto (NOWPayments)
           </button>
         </div>
-      </section>
 
-      {/* Pricing Cards Grid */}
-      <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-6">
-        {TIERS.map((tier) => (
-          <div key={tier.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-700 transition">
-            <div>
-              <h3 className="text-2xl font-bold mb-1">{tier.name}</h3>
-              <p className="text-xs text-slate-400 mb-6">{tier.audience}</p>
-              <div className="text-4xl font-extrabold mb-2">${tier.price} <span className="text-sm font-normal text-slate-400">/ mo</span></div>
-              <p className="text-xs text-emerald-400 font-medium mb-6">+ $900 setup fee</p>
-              
-              <ul className="space-y-3 text-sm text-slate-300 mb-8">
-                {tier.features.map((feat, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <span className="text-blue-500 font-bold">✓</span> {feat}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <button
-              onClick={() => handleCheckout(tier)}
-              disabled={loadingTier === tier.id}
-              className={`w-full py-3 rounded-lg font-bold text-sm transition ${
-                paymentMethod === 'card'
-                  ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                  : 'bg-emerald-600 hover:bg-emerald-500 text-white'
-              }`}
-            >
-              {loadingTier === tier.id ? 'Processing...' : `Pay via ${paymentMethod === 'card' ? 'Card' : 'USDT BEP20'}`}
-            </button>
+        {/* PRICING CARD */}
+        <div className="bg-[#111827] border border-gray-800 rounded-2xl p-8 max-w-md mx-auto text-left shadow-2xl">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-white mb-1">Starter</h2>
+            <p className="text-gray-400 text-sm">Individual brokers & small agencies</p>
           </div>
-        ))}
-      </div>
-    </main>
+
+          <div className="flex items-baseline gap-1 mb-6">
+            <span className="text-4xl sm:text-5xl font-extrabold text-white">$299</span>
+            <span className="text-gray-400 font-medium">/ mo</span>
+          </div>
+
+          <ul className="space-y-3 mb-8 text-sm text-gray-300">
+            <li className="flex items-center gap-2">
+              <span className="text-emerald-400 font-bold">✓</span> Automated WhatsApp Lead Responder
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-emerald-400 font-bold">✓</span> 30-Second Instant Qualification
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-emerald-400 font-bold">✓</span> Direct Site-Visit Booking Engine
+            </li>
+          </ul>
+
+          {/* DYNAMIC CHECKOUT BUTTON */}
+          {paymentMethod === "paddle" ? (
+            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl text-center transition-colors shadow-lg">
+              Pay via Card (Paddle)
+            </button>
+          ) : (
+            <button className="w-full bg-[#10B981] hover:bg-emerald-600 text-white font-bold py-3.5 px-6 rounded-xl text-center transition-colors shadow-lg">
+              Pay via Crypto (NOWPayments)
+            </button>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
+
