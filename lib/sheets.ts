@@ -14,7 +14,7 @@ export async function getAgencyInventory(refreshToken: string, spreadsheetId: st
   // Read range from agency's sheet
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: "Sheet1!A1:Z100", // Reads rows from Sheet1
+    range: "Sheet1!A1:Z100",
   });
 
   return response.data.values || [];
