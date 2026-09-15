@@ -10,7 +10,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "GEMINI_API_KEY is missing" }, { status: 500 });
     }
 
-    const { agencyWhatsAppNumber, leadPhone, leadMessage } = await req.json();
+    const body = await req.json();
+    const agencyWhatsAppNumber = body.agencyWhatsAppNumber || body.whatsapp_number || body.agency_whatsapp_number;
+    const leadPhone = body.leadPhone || body.lead_phone;
+    const leadMessage = body.leadMessage || body.message;
 
     if (!agencyWhatsAppNumber || !leadMessage) {
       return NextResponse.json(
@@ -99,6 +102,7 @@ ${JSON.stringify(inventoryData)}
     );
   }
 }
+
 
 
 
