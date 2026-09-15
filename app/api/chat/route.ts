@@ -47,8 +47,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // STEP 3: Isolated Context Execution for Gemini 2.5 Flash
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // STEP 3: Isolated Context Execution for Gemini
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const systemPrompt = `
       You are an AI Sales Agent representing ${agency.name}.
@@ -95,4 +95,5 @@ export async function POST(req: Request) {
     );
   }
 }
+
 
