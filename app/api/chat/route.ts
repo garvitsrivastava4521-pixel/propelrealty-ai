@@ -10,11 +10,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "GEMINI_API_KEY is missing" }, { status: 500 });
     }
 
-    const { agencyWhatsappNumber, leadPhone, leadMessage } = await req.json();
+    const { agencyWhatsAppNumber, leadPhone, leadMessage } = await req.json();
 
-    if (!agencyWhatsappNumber || !leadMessage) {
+    if (!agencyWhatsAppNumber || !leadMessage) {
       return NextResponse.json(
-        { error: "Missing agencyWhatsappNumber or leadMessage" },
+        { error: "Missing agencyWhatsAppNumber or leadMessage" },
         { status: 400 }
       );
     }
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const { data: agency, error: agencyError } = await supabase
       .from("agencies")
       .select("id, name, google_refresh_token, google_sheet_id")
-      .eq("whatsapp_number", agencyWhatsappNumber)
+      .eq("whatsapp_number", agencyWhatsAppNumber)
       .single();
 
     if (agencyError || !agency) {
@@ -48,33 +48,33 @@ export async function POST(req: Request) {
     // STEP 3: Initialize Google Gen AI SDK
     const ai = new GoogleGenAI({ apiKey });
 
-    const systemPrompt = `
-      You are an AI Sales Agent representing ${agency.name}.
-      Answer prospective client queries using ONLY the live property inventory data below.
-      
-      RULES:
-      1. Be polite, clear, and professional.
-      2. If a matching property is found, state its price, location, and key features concisely.
-      3. Encourage the client to schedule a site visit.
-      4. If unavailable, state so politely.
+    const systemInstruction = `
+You are an AI Sales Agent representing ${agency.name}.
+Answer prospective client queries using ONLY the live property inventory data below.
 
-      LIVE INVENTORY DATA FOR ${agency.name}:
-      ${JSON.stringify(inventoryData)}
+RULES:
+1. Be polite, clear, and professional.
+2. If a matching property is found, state its price, location, and key features concisely.
+3. Encourage the client to schedule a site visit.
+4. If unavailable, state so politely.
 
-      CLIENT INQUIRY:
-      ${leadMessage}
-    `;
+LIVE INVENTORY DATA FOR ${agency.name}:
+${JSON.stringify(inventoryData)}
+`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: systemPrompt,
+      contents: `CLIENT INQUIRY:\n${leadMessage}`,
+      config: {
+        systemInstruction: systemInstruction,
+      },
     });
 
     const replyText = response.text || "";
 
     // STEP 4: Save Conversation Record in Supabase
     if (leadPhone) {
-      await supabase.from("conversations").insert({
+      const { error: dbError } = await supabase.from("conversations").insert({
         agency_id: agency.id,
         lead_phone: leadPhone,
         message_history: [
@@ -82,6 +82,8 @@ export async function POST(req: Request) {
           { role: "assistant", content: replyText, timestamp: new Date().toISOString() },
         ],
       });
+
+      if (dbError) console.error("Database logging error:", dbError);
     }
 
     return NextResponse.json({
@@ -97,6 +99,7 @@ export async function POST(req: Request) {
     );
   }
 }
+
 
 
 
