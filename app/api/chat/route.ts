@@ -11,9 +11,13 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const agencyWhatsAppNumber = body.agencyWhatsAppNumber || body.whatsapp_number || body.agency_whatsapp_number;
+    const agencyWhatsAppNumber =
+      body.agencyWhatsAppNumber ||
+      body.agencywhatsappNumber ||
+      body.whatsapp_number ||
+      body.agency_whatsapp_number;
     const leadPhone = body.leadPhone || body.lead_phone;
-    const leadMessage = body.leadMessage || body.message;
+    const leadMessage = body.leadMessage || body.message || body.lead_message;
 
     if (!agencyWhatsAppNumber || !leadMessage) {
       return NextResponse.json(
@@ -67,8 +71,7 @@ ${JSON.stringify(inventoryData)}
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-contents: `CLIENT INQUIRY:\n${leadMessage}`,
-    
+      contents: `CLIENT INQUIRY:\n${leadMessage}`,
       config: {
         systemInstruction: systemInstruction,
       },
@@ -103,6 +106,7 @@ contents: `CLIENT INQUIRY:\n${leadMessage}`,
     );
   }
 }
+
 
 
 
