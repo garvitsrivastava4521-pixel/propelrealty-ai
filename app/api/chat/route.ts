@@ -1,13 +1,15 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getAgencyInventory } from "@/lib/sheets";
 
-// Initialize Gemini API client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
 export async function POST(req: Request) {
   try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: "GEMINI_API_KEY is missing" }, { status: 500 });
+    }
+
     const { agencyWhatsappNumber, leadPhone, leadMessage } = await req.json();
 
     if (!agencyWhatsappNumber || !leadMessage) {
@@ -17,7 +19,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // STEP 1: Multi-Tenant Data Isolation (Lookup specific agency in Supabase)
+    // STEP 1: Multi-Tenant Lookup (Supabase)
     const { data: agency, error: agencyError } = await supabase
       .from("agencies")
       .select("id, name, google_refresh_token, google_sheet_id")
@@ -25,14 +27,10 @@ export async function POST(req: Request) {
       .single();
 
     if (agencyError || !agency) {
-      console.error("Agency lookup failed:", agencyError);
-      return NextResponse.json(
-        { error: "Agency not found or inactive" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Agency not found" }, { status: 404 });
     }
 
-    // STEP 2: Fetch LIVE inventory from THIS agency's Google Sheet only
+    // STEP 2: Fetch Agency Inventory from Google Sheets
     let inventoryData = [];
     try {
       inventoryData = await getAgencyInventory(
@@ -40,25 +38,25 @@ export async function POST(req: Request) {
         agency.google_sheet_id
       );
     } catch (sheetErr) {
-      console.error("Failed to read agency Google Sheet:", sheetErr);
+      console.error("Sheet read error:", sheetErr);
       return NextResponse.json(
-        { error: "Unable to access agency inventory sheet" },
+        { error: "Failed to read agency inventory sheet" },
         { status: 500 }
       );
     }
 
-    // STEP 3: Isolated Context Execution for Gemini 2.5
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // STEP 3: Initialize Google Gen AI SDK
+    const ai = new GoogleGenAI({ apiKey });
 
     const systemPrompt = `
       You are an AI Sales Agent representing ${agency.name}.
-      Your primary job is to answer prospective client queries using ONLY the live property inventory data provided below.
+      Answer prospective client queries using ONLY the live property inventory data below.
       
       RULES:
       1. Be polite, clear, and professional.
       2. If a matching property is found, state its price, location, and key features concisely.
       3. Encourage the client to schedule a site visit.
-      4. If the requested property or budget range is not in the data, state politely that it is currently unavailable.
+      4. If unavailable, state so politely.
 
       LIVE INVENTORY DATA FOR ${agency.name}:
       ${JSON.stringify(inventoryData)}
@@ -67,10 +65,14 @@ export async function POST(req: Request) {
       ${leadMessage}
     `;
 
-    const result = await model.generateContent(systemPrompt);
-    const replyText = result.response.text();
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: systemPrompt,
+    });
 
-    // STEP 4: Store Conversation History in Supabase
+    const replyText = response.text || "";
+
+    // STEP 4: Save Conversation Record in Supabase
     if (leadPhone) {
       await supabase.from("conversations").insert({
         agency_id: agency.id,
@@ -87,14 +89,15 @@ export async function POST(req: Request) {
       agency: agency.name,
       reply: replyText,
     });
-  } catch (error) {
-    console.error("Chat route processing error:", error);
+  } catch (error: any) {
+    console.error("Chat error:", error);
     return NextResponse.json(
-      { error: "Internal server error processing request" },
+      { error: "Internal server error", details: error?.message },
       { status: 500 }
     );
   }
 }
+
 
 
 
