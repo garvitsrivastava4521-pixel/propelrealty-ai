@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import OpenAI from "openai";
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getAgencyInventory } from "@/lib/sheets";
@@ -7,11 +8,6 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "GEMINI_API_KEY is missing" }, { status: 500 });
-    }
-
     const body = await req.json();
     const agencyWhatsAppNumber =
       body.agencyWhatsAppNumber ||
@@ -28,9 +24,10 @@ export async function POST(req: Request) {
       );
     }
 
+    // 1. Fetch Agency & Trial Status
     const { data: agency, error: agencyError } = await supabase
       .from("agencies")
-      .select("id, name, google_refresh_token, google_sheet_id")
+      .select("id, name, created_at, trial_ends_at, is_paid, google_refresh_token, google_sheet_id")
       .eq("whatsapp_number", agencyWhatsAppNumber)
       .single();
 
@@ -38,6 +35,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Agency not found" }, { status: 404 });
     }
 
+    // 2. Check 7-Day Free Trial Expiration
+    const now = new Date();
+    const trialEnd = agency.trial_ends_at 
+      ? new Date(agency.trial_ends_at) 
+      : new Date(new Date(agency.created_at).getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    if (!agency.is_paid && now > trialEnd) {
+      return NextResponse.json(
+        { error: "Your 7-day free trial has expired. Please upgrade to a paid plan." },
+        { status: 403 }
+      );
+    }
+
+    // 3. Fetch Agency Sheet Inventory
     let inventoryData = [];
     try {
       inventoryData = await getAgencyInventory(
@@ -48,8 +59,6 @@ export async function POST(req: Request) {
       console.error("Sheet read error:", sheetErr);
       return NextResponse.json({ error: "Failed to read agency inventory sheet" }, { status: 500 });
     }
-
-    const ai = new GoogleGenAI({ apiKey });
 
     const systemInstruction = `You are an AI Sales Agent representing ${agency.name}.
 Answer prospective client queries using ONLY the live property inventory data below.
@@ -63,16 +72,32 @@ RULES:
 LIVE INVENTORY DATA FOR ${agency.name}:
 ${JSON.stringify(inventoryData)}`;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: "CLIENT INQUIRY:\n" + leadMessage,
-      config: {
-        systemInstruction: systemInstruction,
-      },
-    });
+    let replyText = "";
 
-    const replyText = response.text || "";
+    // 4. Generate AI Response (Prefers OpenAI if available, falls back to Gemini)
+    if (process.env.OPENAI_API_KEY) {
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini", // Very cheap/free tier friendly
+        messages: [
+          { role: "system", content: systemInstruction },
+          { role: "user", content: leadMessage }
+        ]
+      });
+      replyText = completion.choices[0]?.message?.content || "";
+    } else if (process.env.GEMINI_API_KEY) {
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: "CLIENT INQUIRY:\n" + leadMessage,
+        config: { systemInstruction },
+      });
+      replyText = response.text || "";
+    } else {
+      return NextResponse.json({ error: "No AI API key configured" }, { status: 500 });
+    }
 
+    // 5. Save Conversation Record
     if (leadPhone) {
       await supabase.from("conversations").insert({
         agency_id: agency.id,
@@ -90,5 +115,6 @@ ${JSON.stringify(inventoryData)}`;
     return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
   }
 }
+
 
 
